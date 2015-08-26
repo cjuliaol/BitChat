@@ -1,9 +1,12 @@
 package com.example.thewizard.cjuliaol.bitchat;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.parse.Parse;
 
 public class ContactsActivity extends AppCompatActivity {
 
@@ -11,6 +14,15 @@ public class ContactsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts);
+
+
+        // Enable Local Datastore.
+        Parse.enableLocalDatastore(this);
+
+        Parse.initialize(this, "x8BgPbIuaIXb63oRI9vu3pGLjVc9VeTqnL1buNik", "iGtUt4kHlI6jp7Jv1muxfw2wl4zKdQLVjnUgVd4Q");
+
+        Intent intent = new Intent(this,SignInActivity.class);
+        startActivity(intent);
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
