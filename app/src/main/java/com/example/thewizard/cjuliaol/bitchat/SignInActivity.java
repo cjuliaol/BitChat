@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
@@ -20,6 +21,7 @@ public class SignInActivity extends AppCompatActivity {
     private static final String TAG = "SignInActivityLog";
     private EditText mUserNumber;
     private EditText mUserPassword;
+    private EditText mUserName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,14 +31,14 @@ public class SignInActivity extends AppCompatActivity {
 
         mUserNumber = (EditText) findViewById(R.id.user_number);
         mUserPassword = (EditText) findViewById(R.id.user_password);
-
+        mUserName = (EditText) findViewById(R.id.user_name);
 
 
         TelephonyManager telephonyManager = (TelephonyManager) this.getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE);
         String phoneNumber = telephonyManager.getLine1Number();
         String subscriberId = telephonyManager.getSubscriberId();
-        Log.d(TAG, "Phone number is " + phoneNumber);
-        Log.d(TAG, "Subscriber id is " + subscriberId);
+        // Log.d(TAG, "Phone number is " + phoneNumber);
+        // Log.d(TAG, "Subscriber id is " + subscriberId);
 
         mUserNumber.setText(phoneNumber);
 
@@ -49,30 +51,43 @@ public class SignInActivity extends AppCompatActivity {
                 String password = mUserPassword.getText().toString();
                 ParseUser user = new ParseUser();
 
-                 user.setUsername(phoneNumber);
-                 user.setPassword(password);
+                user.setUsername(phoneNumber);
+                user.setPassword(password);
+
+                user.put("name", mUserName.getText().toString());
 
                 user.signUpInBackground(new SignUpCallback() {
                     @Override
                     public void done(ParseException e) {
                         if (e == null) {
-                            Log.d(TAG,"SIGN UP SUCCESS");
-                        }
-                        else
-                        {
-                            Log.d(TAG,"SIGN UP FAILED");
+                            SignInActivity.this.finish();
+                        } else {
+                            Log.d(TAG, "SIGN UP FAILED");
                         }
                     }
                 });
-
-
-
-
-
-
             }
         });
 
+        Button logInButton = (Button) findViewById(R.id.log_in_button);
+        logInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                ParseUser.logInInBackground(mUserNumber.getText().toString(), mUserPassword.getText().toString(),
+                        new LogInCallback() {
+                            @Override
+                            public void done(ParseUser parseUser, ParseException e) {
+                                if (e == null) {
+                                    SignInActivity.this.finish();
+                                } else {
+                                    Log.d(TAG, "SIGN UP FAILED");
+                                }
+                            }
+                        });
+
+            }
+        });
 
     }
 

@@ -2,6 +2,7 @@ package com.example.thewizard.cjuliaol.bitchat;
 
 import android.app.Activity;
 import android.app.LoaderManager;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
@@ -15,7 +16,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
+
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -23,11 +34,14 @@ import android.widget.ListView;
  * {@link Listener} interface
  * to handle interaction events.
  */
-public class ContactFragment extends Fragment implements AdapterView.OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor> {
+public class ContactFragment extends Fragment implements AdapterView.OnItemClickListener, ContactDataSource.Listener {
 
-    private static final String TAG = "ContacFragmentLog";
+    private static final String TAG = "ContactFragmentLog";
     private Listener mListener;
-    private SimpleCursorAdapter mSimpleCursorAdapter;
+
+    private ArrayList<Contact> mContacts = new ArrayList<>();
+    private ContactAdapter mContactAdapter;
+
 
     public ContactFragment() {
         // Required empty public constructor
@@ -42,67 +56,29 @@ public class ContactFragment extends Fragment implements AdapterView.OnItemClick
         ListView listView = (ListView) view.findViewById(R.id.list);
         listView.setOnItemClickListener(this);
 
-        String[] columns = {ContactsContract.CommonDataKinds.Phone.NUMBER, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME};
-        int[] ids = {R.id.number, R.id.name};
-        // CJL: Using a Content Provider is this case Contacts Content Provider
-        /*Cursor cursor =getActivity().getContentResolver()
-                .query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                        new String[] {ContactsContract.CommonDataKinds.Phone._ID,
-                                ContactsContract.CommonDataKinds.Phone.NUMBER,ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME}
-                        , null, null, null);*/
 
-       /* cursor.moveToFirst();
-        while( !cursor.isAfterLast()) {
-            String number = cursor.getString(0);
-            String name = cursor.getString(1);
-
-            Log.d(TAG,name + ", " + number);
-            cursor.moveToNext();    }
-       cursor.close();*/
-
-        // CJL: columns and ids must be in the same order
-        //listView.setAdapter( new SimpleCursorAdapter(getActivity(),R.layout.contact_list_item,cursor,columns,ids,0));
-        mSimpleCursorAdapter = new SimpleCursorAdapter(getActivity(), R.layout.contact_list_item, null, columns, ids, 0);
-
-        listView.setAdapter(mSimpleCursorAdapter);
+        ContactDataSource dataSource = new ContactDataSource(getActivity(), this);
+        mContactAdapter = new ContactAdapter(mContacts);
+        listView.setAdapter(mContactAdapter);
 
         // Instead of manually querying the ContentProvider, we can use a Loader:
         //  Init the loader
-        getLoaderManager().initLoader(0, null, this);
+        getLoaderManager().initLoader(0, null, dataSource);
         return view;
     }
 
     // CJL: Retrieving the selected row
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Cursor cursor = ((SimpleCursorAdapter) parent.getAdapter()).getCursor();
-        cursor.moveToPosition(position);
 
-        Log.d(TAG, "Phone number is " + cursor.getString(1) + " Name is " + cursor.getString(2));
 
     }
 
-    // Instead of manually querying the ContentProvider, we can use a Loader: implementing LoaderManager.LoaderCallbacks<Cursor>
     @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(getActivity(), ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                new String[]{ContactsContract.CommonDataKinds.Phone._ID,
-                        ContactsContract.CommonDataKinds.Phone.NUMBER, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME}, null, null, null);
-    }
-
-    // Instead of manually querying the ContentProvider, we can use a Loader: implementing LoaderManager.LoaderCallbacks<Cursor>
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        mSimpleCursorAdapter.swapCursor(null);
-    }
-
-    // Instead of manually querying the ContentProvider, we can use a Loader: implementing LoaderManager.LoaderCallbacks<Cursor>
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mSimpleCursorAdapter.swapCursor(data);
-
-        Log.d(TAG, "Implementing Cursor Loader");
-
+    public void onFetchedContacts(ArrayList<Contact> contacts) {
+        mContacts.clear();
+        mContacts.addAll(contacts);
+        mContactAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -135,6 +111,22 @@ public class ContactFragment extends Fragment implements AdapterView.OnItemClick
     public interface Listener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
+    }
+
+    private class ContactAdapter extends ArrayAdapter<Contact> {
+        public ContactAdapter(ArrayList<Contact> contacts) {
+            super(getActivity(), R.layout.contact_list_item, R.id.name, contacts);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            convertView = super.getView(position, convertView, parent);
+            Contact contact = getItem(position);
+            TextView nameView = (TextView) convertView.findViewById(R.id.name);
+            nameView.setText(contact.getName());
+
+            return convertView;
+        }
     }
 
 }

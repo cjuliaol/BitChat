@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.parse.Parse;
+import com.parse.ParseUser;
 
 public class ContactsActivity extends AppCompatActivity {
 
@@ -21,8 +22,13 @@ public class ContactsActivity extends AppCompatActivity {
 
         Parse.initialize(this, "x8BgPbIuaIXb63oRI9vu3pGLjVc9VeTqnL1buNik", "iGtUt4kHlI6jp7Jv1muxfw2wl4zKdQLVjnUgVd4Q");
 
-        Intent intent = new Intent(this,SignInActivity.class);
-        startActivity(intent);
+        // CJL: If you're not log in start Sign in activity
+        if (ParseUser.getCurrentUser() == null) {
+            Intent intent = new Intent(this,SignInActivity.class);
+            startActivity(intent);
+        }
+
+
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
