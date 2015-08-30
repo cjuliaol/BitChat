@@ -70,8 +70,7 @@ public class ContactFragment extends Fragment implements AdapterView.OnItemClick
     // CJL: Retrieving the selected row
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-
+        mListener.onContactSelected(mContacts.get(position));
     }
 
     @Override
@@ -85,7 +84,7 @@ public class ContactFragment extends Fragment implements AdapterView.OnItemClick
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            //    mListener = (Listener) activity;
+               mListener = (Listener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement Listener");
@@ -109,8 +108,7 @@ public class ContactFragment extends Fragment implements AdapterView.OnItemClick
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface Listener {
-        // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
+        public void onContactSelected(Contact contact);
     }
 
     private class ContactAdapter extends ArrayAdapter<Contact> {
