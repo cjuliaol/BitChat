@@ -1,33 +1,55 @@
 package com.example.thewizard.cjuliaol.bitchat;
 
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
-public class ChatActivity extends AppCompatActivity {
+public class ChatActivity extends AppCompatActivity implements View.OnClickListener{
+
+    private ArrayList<Message> mMessages;
+    private MessageAdapter mMessageAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        ArrayList<Message> messages =  new ArrayList<Message>();
-        messages.add( new Message("Hello","18095557777"));
+        mMessages =
+                new ArrayList<Message>();
+        mMessages.add(new Message("Hello darling", "18095557777"));
 
 
 
-
+         mMessageAdapter = new MessageAdapter(mMessages);
         ListView messageListView = (ListView) findViewById(R.id.message_list);
-        messageListView.setAdapter( new MessageAdapter(messages));
+        messageListView.setAdapter(mMessageAdapter);
 
+        Button sendMessage = (Button) findViewById(R.id.send_message);
+        sendMessage.setOnClickListener(this);
+
+
+    }
+
+    @Override
+    public void onClick(View v) {
+        EditText newMessageView = (EditText) findViewById(R.id.new_message);
+        String newMessage = newMessageView.getText().toString();
+        mMessages.add(new Message(newMessage,ContactDataSource.getCurrentUser().getPhoneNumber()));
+        mMessageAdapter.notifyDataSetChanged();
+        newMessageView.setText("");
 
     }
 
@@ -65,7 +87,20 @@ public class ChatActivity extends AppCompatActivity {
             Message message = getItem(position);
 
            TextView messageText = (TextView) convertView.findViewById(R.id.message);
-            messageText.setText( message.getText());
+            messageText.setText(message.getText());
+
+            LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) messageText.getLayoutParams();
+
+            if (message.getSender().equals(ContactDataSource.getCurrentUser().getPhoneNumber()) ) {
+                messageText.setBackground(getDrawable(R.drawable.bubble_right_green));
+                layoutParams.gravity = Gravity.RIGHT;
+            }
+            else {
+                messageText.setBackground(getDrawable(R.drawable.bubble_left_gray));
+                layoutParams.gravity = Gravity.LEFT;
+            }
+
+            messageText.setLayoutParams(layoutParams);
 
             return convertView;
         }

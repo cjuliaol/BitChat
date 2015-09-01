@@ -12,4 +12,5 @@
     <string name="sign_up_button">Sign Up</string>
     <string name="log_in_button">LogIn</string>
     <string name="title_activity_chat">ChatActivity</string>
+    <string name="send">Send</string>
 </resources>

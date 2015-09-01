@@ -64,7 +64,7 @@ public class ContactFragment extends Fragment implements AdapterView.OnItemClick
         // Instead of manually querying the ContentProvider, we can use a Loader:
         //  Init the loader
         getLoaderManager().initLoader(0, null, dataSource);
-        return view;
+                return view;
     }
 
     // CJL: Retrieving the selected row
