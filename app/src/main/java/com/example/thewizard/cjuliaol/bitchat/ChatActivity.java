@@ -17,10 +17,12 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-public class ChatActivity extends AppCompatActivity implements View.OnClickListener{
+public class ChatActivity extends AppCompatActivity implements View.OnClickListener, MessageDataSource.Listener{
 
     private ArrayList<Message> mMessages;
     private MessageAdapter mMessageAdapter;
+    public static final String CONTACT_NUMBER="CONTACTNUMBER";
+    private String mRecipient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +33,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                 new ArrayList<Message>();
         mMessages.add(new Message("Hello darling", "18095557777"));
 
+        mRecipient = getIntent().getStringExtra(CONTACT_NUMBER);
+
 
 
          mMessageAdapter = new MessageAdapter(mMessages);
@@ -40,6 +44,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         Button sendMessage = (Button) findViewById(R.id.send_message);
         sendMessage.setOnClickListener(this);
 
+        MessageDataSource.fetchMessage(ContactDataSource.getCurrentUser().getPhoneNumber(),mRecipient, this);
+
 
     }
 
@@ -47,10 +53,20 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         EditText newMessageView = (EditText) findViewById(R.id.new_message);
         String newMessage = newMessageView.getText().toString();
-        mMessages.add(new Message(newMessage,ContactDataSource.getCurrentUser().getPhoneNumber()));
+        Message message = new Message(newMessage,ContactDataSource.getCurrentUser().getPhoneNumber());
+        mMessages.add(message);
         mMessageAdapter.notifyDataSetChanged();
         newMessageView.setText("");
+        MessageDataSource.sendMessage(message.getSender(),mRecipient,message.getText());
 
+
+    }
+
+    @Override
+    public void onFetchedMessages(ArrayList<Message> messages) {
+      mMessages.clear();
+        mMessages.addAll(messages);
+        mMessageAdapter.notifyDataSetChanged();
     }
 
     @Override

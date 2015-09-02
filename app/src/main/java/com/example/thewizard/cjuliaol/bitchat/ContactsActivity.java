@@ -40,6 +40,7 @@ public class ContactsActivity extends AppCompatActivity implements ContactFragme
     @Override
     public void onContactSelected(Contact contact) {
         Intent intent = new Intent(this,ChatActivity.class);
+        intent.putExtra(ChatActivity.CONTACT_NUMBER, contact.getPhoneNumber());
         startActivity(intent);
     }
 
