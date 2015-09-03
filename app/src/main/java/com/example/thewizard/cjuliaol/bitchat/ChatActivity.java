@@ -28,7 +28,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     public static final String CONTACT_NUMBER = "CONTACTNUMBER";
     private String mRecipient;
     private ListView mMessageListView;
-    private Date mLastMessageDate;
+    private Date mLastMessageDate = new Date();
     private Handler mHandler = new Handler();
     private Runnable mRunnable = new Runnable() {
         @Override

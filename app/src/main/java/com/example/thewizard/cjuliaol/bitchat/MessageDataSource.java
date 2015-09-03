@@ -38,15 +38,20 @@ public class MessageDataSource {
             @Override
             public void done(List<ParseObject> list, ParseException e) {
 
-                ArrayList<Message> messages = new ArrayList<Message>();
-                for (ParseObject parseObject : list) {
-                    Message message = new Message(parseObject.getString("text"),  parseObject.getString("sender"));
-                    message.setDate(parseObject.getCreatedAt());
-                    messages.add(message);
+                if (list != null && e == null) {
+
+                    ArrayList<Message> messages = new ArrayList<Message>();
+                    for (ParseObject parseObject : list) {
+                        Message message = new Message(parseObject.getString("text"),  parseObject.getString("sender"));
+                        message.setDate(parseObject.getCreatedAt());
+                        messages.add(message);
+
+                    }
+                    Log.d(TAG, "query.findInBackground on MessageDataSource before  listener.onFetchedMessages");
+                    listener.onFetchedMessages(messages);
 
                 }
-                Log.d(TAG, "query.findInBackground on MessageDataSource before  listener.onFetchedMessages");
-                listener.onFetchedMessages(messages);
+
             }
 
         });
@@ -55,23 +60,28 @@ public class MessageDataSource {
 
     public static void fetchMessagesAfter(String sender, String recipient,Date after, final Listener listener){
         ParseQuery<ParseObject> mainQuery = messagesQuery(sender, recipient);
-        mainQuery.whereGreaterThan("createdAt",after);
+        mainQuery.whereGreaterThan("createdAt", after);
 
-        Log.d(TAG,"fetchMessagesAfter Date parameter: " + after.toString());
+//        Log.d(TAG,"fetchMessagesAfter Date parameter: " + after.toString());
         mainQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> list, ParseException e) {
 
-                ArrayList<Message> messages = new ArrayList<Message>();
-                for (ParseObject parseObject : list) {
-                    Message message = new Message(parseObject.getString("text"),  parseObject.getString("sender"));
-                    message.setDate(parseObject.getCreatedAt());
-                    Log.d(TAG, "Mensaje: " +message.getText());
-                    messages.add(message);
+                if (list != null && e == null) {
+
+                    ArrayList<Message> messages = new ArrayList<Message>();
+                    for (ParseObject parseObject : list) {
+                        Message message = new Message(parseObject.getString("text"),  parseObject.getString("sender"));
+                        message.setDate(parseObject.getCreatedAt());
+                        Log.d(TAG, "Mensaje: " +message.getText());
+                        messages.add(message);
+
+                    }
+                    Log.d(TAG, "query.findInBackground on MessageDataSource before  listener.onAddMessages");
+                    listener.onAddMessages(messages);
 
                 }
-                Log.d(TAG, "query.findInBackground on MessageDataSource before  listener.onAddMessages");
-                listener.onAddMessages(messages);
+
             }
 
         });
