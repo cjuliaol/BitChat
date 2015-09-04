@@ -17,10 +17,7 @@ public class ContactsActivity extends AppCompatActivity implements ContactFragme
         setContentView(R.layout.activity_contacts);
 
 
-        // Enable Local Datastore.
-        Parse.enableLocalDatastore(this);
-
-        Parse.initialize(this, "x8BgPbIuaIXb63oRI9vu3pGLjVc9VeTqnL1buNik", "iGtUt4kHlI6jp7Jv1muxfw2wl4zKdQLVjnUgVd4Q");
+       // CJL: I move Parse initialization to another class
 
         // CJL: If you're not log in start Sign in activity
         if (ContactDataSource.getCurrentUser() == null) {

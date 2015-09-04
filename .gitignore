@@ -5,3 +5,9 @@
 .DS_Store
 /build
 /captures
+
+AppConfig.java
+
+# Built application files
+*.apk
+*.ap_

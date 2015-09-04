@@ -1,6 +1,7 @@
 package com.example.thewizard.cjuliaol.bitchat;
 
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -33,7 +34,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private Runnable mRunnable = new Runnable() {
         @Override
         public void run() {
-            Log.d(TAG, "Fetched messages with Runnable");
+           // Log.d(TAG, "Fetched messages with Runnable");
             MessageDataSource.fetchMessagesAfter(
                     ContactDataSource.getCurrentUser().getPhoneNumber(),
                     mRecipient,
@@ -50,10 +51,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
         mMessages =
                 new ArrayList<Message>();
-        mMessages.add(new Message("Hello darling", "18095557777"));
+
 
         mRecipient = getIntent().getStringExtra(CONTACT_NUMBER);
-
+        setTitle(mRecipient);
 
         mMessageAdapter = new MessageAdapter(mMessages);
         mMessageListView = (ListView) findViewById(R.id.message_list);
@@ -153,12 +154,28 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             messageText.setText(message.getText());
 
             LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) messageText.getLayoutParams();
+              int sdk = Build.VERSION.SDK_INT;
+
+
 
             if (message.getSender().equals(ContactDataSource.getCurrentUser().getPhoneNumber())) {
-                messageText.setBackground(getDrawable(R.drawable.bubble_right_green));
+
+                if (sdk >= Build.VERSION_CODES.JELLY_BEAN) {
+                    messageText.setBackground(getDrawable(R.drawable.bubble_right_green));
+                }
+                else {
+                    messageText.setBackgroundDrawable(getDrawable(R.drawable.bubble_right_green));
+                }
+
                 layoutParams.gravity = Gravity.RIGHT;
             } else {
-                messageText.setBackground(getDrawable(R.drawable.bubble_left_gray));
+                if (sdk >= Build.VERSION_CODES.JELLY_BEAN) {
+                    messageText.setBackground(getDrawable(R.drawable.bubble_left_gray));
+                }
+                else {
+                    messageText.setBackgroundDrawable(getDrawable(R.drawable.bubble_left_gray));
+                }
+
                 layoutParams.gravity = Gravity.LEFT;
             }
 
