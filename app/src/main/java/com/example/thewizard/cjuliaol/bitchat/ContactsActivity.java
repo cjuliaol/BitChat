@@ -1,5 +1,7 @@
 package com.example.thewizard.cjuliaol.bitchat;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,11 +11,24 @@ import android.view.MenuItem;
 import com.parse.Parse;
 import com.parse.ParseUser;
 
-public class ContactsActivity extends AppCompatActivity implements ContactFragment.Listener {
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+public class ContactsActivity extends AppCompatActivity implements ContactFragment.Listener{
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Thread.setDefaultUncaughtExceptionHandler(new TopExceptionHandler(this));
+
+
+       ExceptionReporting.sendCrashReportFile(this);
+
         setContentView(R.layout.activity_contacts);
 
 
@@ -62,4 +77,8 @@ public class ContactsActivity extends AppCompatActivity implements ContactFragme
 
         return super.onOptionsItemSelected(item);
     }
+
+
+
+
 }

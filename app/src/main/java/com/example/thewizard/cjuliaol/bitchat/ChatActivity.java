@@ -47,6 +47,12 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Thread.setDefaultUncaughtExceptionHandler(new TopExceptionHandler(this));
+
+        ExceptionReporting.sendCrashReportFile(this);
+
+
         setContentView(R.layout.activity_chat);
 
         mMessages =
@@ -74,6 +80,8 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         EditText newMessageView = (EditText) findViewById(R.id.new_message);
         String newMessage = newMessageView.getText().toString();
         Message message = new Message(newMessage, ContactDataSource.getCurrentUser().getPhoneNumber());
+
+       Log.d(TAG, "Current User Phone Number :" + ContactDataSource.getCurrentUser().getPhoneNumber() );
 
         // CJL: Comment it because I poll the message from the backend
        // mMessages.add(message);
@@ -169,6 +177,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
                 layoutParams.gravity = Gravity.RIGHT;
             } else {
+                messageText.setBackground(getDrawable(R.drawable.bubble_left_gray));
                 if (sdk >= Build.VERSION_CODES.JELLY_BEAN) {
                     messageText.setBackground(getDrawable(R.drawable.bubble_left_gray));
                 }

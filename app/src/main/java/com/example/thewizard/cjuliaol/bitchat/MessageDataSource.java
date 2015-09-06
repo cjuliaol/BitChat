@@ -24,7 +24,7 @@ public class MessageDataSource {
         ParseObject message = new ParseObject("Message");
         message.put("sender",sender);
         message.put("recipient",recipient);
-        message.put("text",text);
+        message.put("text", text);
         message.saveInBackground();
 
 
@@ -33,11 +33,12 @@ public class MessageDataSource {
     public static  void fetchMessages(String sender, String recipient, final Listener listener) {
 
       ParseQuery<ParseObject> mainQuery = messagesQuery(sender,recipient);
-
+                   Log.d(TAG,"Sender: " +sender + ", recipient: "+ recipient);
         mainQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> list, ParseException e) {
-
+               // Log.d(TAG,"in findInBackground on fetchMessages "+ list);
+             // String errMessage =  e.getMessage();
                 if (list != null && e == null) {
 
                     ArrayList<Message> messages = new ArrayList<Message>();
@@ -45,6 +46,7 @@ public class MessageDataSource {
                         Message message = new Message(parseObject.getString("text"),  parseObject.getString("sender"));
                         message.setDate(parseObject.getCreatedAt());
                         messages.add(message);
+                        Log.d(TAG,message.getText() + ": " + message.getSender());
 
                     }
                     Log.d(TAG, "query.findInBackground on MessageDataSource before  listener.onFetchedMessages");
@@ -73,11 +75,11 @@ public class MessageDataSource {
                     for (ParseObject parseObject : list) {
                         Message message = new Message(parseObject.getString("text"),  parseObject.getString("sender"));
                         message.setDate(parseObject.getCreatedAt());
-                        Log.d(TAG, "Mensaje: " +message.getText());
+                        //Log.d(TAG, "Mensaje: " +message.getText());
                         messages.add(message);
 
                     }
-                    Log.d(TAG, "query.findInBackground on MessageDataSource before  listener.onAddMessages");
+                 //   Log.d(TAG, "query.findInBackground on MessageDataSource before  listener.onAddMessages");
                     listener.onAddMessages(messages);
 
                 }
